@@ -2799,6 +2799,39 @@ impl<'a, 'tcx> FnCtxt<'a, 'tcx> {
 
         self.autoderef(span, rcvr_ty).any(|(ty, _)| is_local(ty))
     }
+
+    /// Checks whether the expression is a method call where the method of type fn(&mut self, ...) -> ().
+    pub fn check_invalid_method_chain(
+        &self,
+        expr: &'tcx hir::Expr<'tcx>,
+    ) -> Option<errors::InvalidMethodChain> {
+        let typeck_results = self.typeck_results.borrow();
+        if !typeck_results.expr_ty(expr).is_unit() {
+            return None;
+        };
+
+        let ExprKind::MethodCall(segment, rcvr, args, call_span) = expr.kind else {
+            return None
+        };
+
+        let rcvr_ty = typeck_results.expr_ty(rcvr);
+        let Ok(method) = self.lookup_method(rcvr_ty, segment, call_span, expr, rcvr, args) else {
+            return None
+        };
+
+        let Some(first_arg) = method.sig.inputs().first() else {
+            return None
+        };
+
+        if first_arg.ref_mutability().map_or(false, hir::Mutability::is_mut) {
+            return Some(errors::InvalidMethodChain {
+                method_span: call_span,
+                method_name: segment.ident.to_string(),
+            });
+        }
+
+        None
+    }
 }
 
 #[derive(Copy, Clone, Debug)]

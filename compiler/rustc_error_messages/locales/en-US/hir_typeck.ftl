@@ -57,3 +57,5 @@ hir_typeck_lang_start_incorrect_param = parameter {$param_num} of the `start` la
 
 hir_typeck_lang_start_incorrect_ret_ty = the return type of the `start` lang item is incorrect
     .suggestion = change the type from `{$found_ty}` to `{$expected_ty}`
+
+hir_typeck_invalid_method_chain = `{$method_name}` takes `&mut self` and returns `()`, it isn't meant to be used in method chains

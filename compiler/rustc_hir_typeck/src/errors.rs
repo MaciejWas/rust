@@ -205,3 +205,11 @@ pub struct LangStartIncorrectRetTy<'tcx> {
     pub expected_ty: Ty<'tcx>,
     pub found_ty: Ty<'tcx>,
 }
+
+#[derive(Subdiagnostic)]
+#[help(hir_typeck_invalid_method_chain)]
+pub struct InvalidMethodChain {
+    #[primary_span]
+    pub method_span: Span,
+    pub method_name: String,
+}

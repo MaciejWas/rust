@@ -1249,6 +1249,10 @@ impl<'a, 'tcx> FnCtxt<'a, 'tcx> {
                         Some((rcvr, args)),
                         expected,
                     ) {
+                        if let Some(diag) = self.check_invalid_method_chain(rcvr) {
+                            err.subdiagnostic(diag);
+                        }
+
                         err.emit();
                     }
                 }

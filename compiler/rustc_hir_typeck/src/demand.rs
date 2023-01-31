@@ -153,7 +153,7 @@ impl<'a, 'tcx> FnCtxt<'a, 'tcx> {
 
     pub fn demand_coerce(
         &self,
-        expr: &hir::Expr<'tcx>,
+        expr: &'tcx hir::Expr<'tcx>,
         checked_ty: Ty<'tcx>,
         expected: Ty<'tcx>,
         expected_ty_expr: Option<&'tcx hir::Expr<'tcx>>,
@@ -174,7 +174,7 @@ impl<'a, 'tcx> FnCtxt<'a, 'tcx> {
     #[instrument(level = "debug", skip(self, expr, expected_ty_expr, allow_two_phase))]
     pub fn demand_coerce_diag(
         &self,
-        expr: &hir::Expr<'tcx>,
+        expr: &'tcx hir::Expr<'tcx>,
         checked_ty: Ty<'tcx>,
         expected: Ty<'tcx>,
         expected_ty_expr: Option<&'tcx hir::Expr<'tcx>>,
@@ -212,6 +212,12 @@ impl<'a, 'tcx> FnCtxt<'a, 'tcx> {
                 Some(e),
             );
         }
+        
+        // if let Some(subdiag) = self.check_invalid_method_chain(expr) {
+        //     err.subdiagnostic(subdiag);
+        // }
+        
+
 
         (expected, Some(err))
     }
